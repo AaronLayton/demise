@@ -3,6 +3,7 @@
 import { Legend } from "./Legend";
 import { TileInfo } from "./TileInfo";
 import { CoordinateSearch } from "./CoordinateSearch";
+import { QuestInfo } from "./QuestInfo";
 import type { Tile } from "@/lib/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -56,6 +57,11 @@ export const SidePanel = ({
               onNavigate={onNavigate}
             />
           </div>
+          <Separator />
+          <QuestInfo
+            currentLevel={currentLevel}
+            onNavigate={onNavigate}
+          />
           <Separator />
           <Legend />
         </div>

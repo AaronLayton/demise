@@ -7,6 +7,7 @@ import { LevelSelector } from "@/components/dungeon/LevelSelector";
 import { DungeonViewer } from "@/components/dungeon/DungeonViewer";
 import { TileGrid } from "@/components/dungeon/TileGrid";
 import { TeleporterLines } from "@/components/dungeon/TeleporterLines";
+import { QuestMarkers } from "@/components/dungeon/QuestMarkers";
 import { SidePanel } from "@/components/dungeon/SidePanel";
 import type { Tile } from "@/lib/types";
 import {
@@ -188,6 +189,14 @@ export default function LevelPage() {
           <DungeonViewer level={currentLevel} onImageLoad={handleImageLoad} />
           {imageDimensions && imageElement && (
             <>
+              <QuestMarkers
+                imageWidth={imageDimensions.width}
+                imageHeight={imageDimensions.height}
+                imageElement={imageElement}
+                currentLevel={currentLevel}
+                hoveredTile={hoveredTile ? { x: hoveredTile.x, y: hoveredTile.y } : null}
+                highlightedTile={highlightedTile ? { x: highlightedTile.x, y: highlightedTile.y } : null}
+              />
               <TeleporterLines
                 imageWidth={imageDimensions.width}
                 imageHeight={imageDimensions.height}
