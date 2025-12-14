@@ -1,6 +1,5 @@
 "use client";
 
-import { Legend } from "./Legend";
 import { TileInfo } from "./TileInfo";
 import { CoordinateSearch } from "./CoordinateSearch";
 import { QuestInfo } from "./QuestInfo";
@@ -62,8 +61,6 @@ export const SidePanel = ({
             currentLevel={currentLevel}
             onNavigate={onNavigate}
           />
-          <Separator />
-          <Legend />
         </div>
       </ScrollArea>
     </div>
