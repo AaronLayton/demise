@@ -22,8 +22,8 @@ export const SidePanel = ({
   onNavigate,
 }: SidePanelProps) => {
   return (
-    <div className="w-full md:w-80 border-t md:border-t-0 md:border-l border-border bg-background flex flex-col h-full max-h-[50vh] md:max-h-none">
-      <ScrollArea className="flex-1">
+    <div className="w-full md:w-80 border-t md:border-t-0 md:border-l border-border bg-background flex flex-col h-full max-h-[50vh] md:max-h-none overflow-hidden">
+      <ScrollArea className="flex-1 h-full">
         <div className="p-4 space-y-6">
           <CoordinateSearch
             currentLevel={currentLevel}
