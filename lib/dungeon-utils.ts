@@ -114,16 +114,41 @@ export const toGridCoordinates = (gameX: number, gameY: number): { x: number; y:
 /**
  * Create a default tile at given coordinates
  */
-export const createDefaultTile = (x: number, y: number): Tile => {
+export const createDefaultTile = (
+  x: number,
+  y: number,
+  type?: TileType
+): Tile => {
   return {
     x,
     y,
-    type: "floor",
+    type: type || "floor",
     metadata: {
       isNavigable: true,
       isHazardous: false,
     },
   };
+};
+
+/**
+ * Get tile type for a given location (checks teleporter data)
+ */
+export const getTileTypeForLocation = (
+  level: number,
+  gridX: number,
+  gridY: number
+): TileType => {
+  const gameCoords = toGameCoordinates(gridX, gridY);
+  // Lazy import to avoid circular dependency
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { getTeleporterDestination, teleporterData } = require("./teleporter-data");
+  const dest = getTeleporterDestination(
+    level,
+    gameCoords.x,
+    gameCoords.y,
+    teleporterData
+  );
+  return dest !== null ? "teleporter" : "floor";
 };
 
 /**

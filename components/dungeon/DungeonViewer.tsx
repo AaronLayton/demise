@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, startTransition } from "react";
 import { cn } from "@/lib/utils";
 
 interface DungeonViewerProps {
@@ -14,32 +14,30 @@ export const DungeonViewer = ({
   onImageLoad,
 }: DungeonViewerProps) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [imageDimensions, setImageDimensions] = useState<{
-    width: number;
-    height: number;
-  } | null>(null);
   const [opacity, setOpacity] = useState(1);
   const imageRef = useRef<HTMLImageElement>(null);
   const previousLevelRef = useRef<number>(level);
 
-  const imagePath = level === 1 ? `/dungeon/${level}.png` : `/dungeon/${level}.jpg`;
+  const imagePath = [1,2,3,4].includes(level) ? `/dungeon/${level}.png` : `/dungeon/${level}.jpg`;
 
   const handleImageLoad = () => {
     if (imageRef.current) {
       const { naturalWidth, naturalHeight } = imageRef.current;
-      setImageDimensions({ width: naturalWidth, height: naturalHeight });
       setIsLoading(false);
       setOpacity(1);
       onImageLoad?.(naturalWidth, naturalHeight, imageRef.current);
     }
   };
 
-  // Fade out previous image when level changes, then fade in new one
+  // Reset loading state when level changes
   useEffect(() => {
     if (previousLevelRef.current !== level) {
-      setOpacity(0);
-      setIsLoading(true);
       previousLevelRef.current = level;
+      // Use startTransition to avoid cascading renders
+      startTransition(() => {
+        setIsLoading(true);
+        setOpacity(0);
+      });
     }
   }, [level]);
 

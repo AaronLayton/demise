@@ -36,8 +36,16 @@ export type TileType =
   | "item-white"
   | "structure";
 
+export interface TeleporterDestination {
+  x: number; // Game coordinates (1-indexed, bottom-left origin)
+  y: number;
+  level: number;
+  isRandom?: boolean; // If true, teleports to random location
+  roomName?: string; // Optional name/description of the destination room
+}
+
 export interface Tile {
-  x: number;
+  x: number; // Grid coordinates (0-indexed, top-left origin)
   y: number;
   type: TileType;
   features?: TileType[]; // Additional features on this tile (e.g., floor with torch)
@@ -46,6 +54,7 @@ export interface Tile {
     isNavigable?: boolean;
     isHazardous?: boolean;
     requiresLevitation?: boolean;
+    teleporterDestination?: TeleporterDestination; // For teleporter tiles
   };
 }
 

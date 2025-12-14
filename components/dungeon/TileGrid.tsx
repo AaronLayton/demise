@@ -1,9 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { getTileCoordinates, getTileSize, createDefaultTile, getMapOffset } from "@/lib/dungeon-utils";
+import {
+  getTileCoordinates,
+  getTileSize,
+  createDefaultTile,
+  getMapOffset,
+  getTileTypeForLocation,
+} from "@/lib/dungeon-utils";
 import type { Tile } from "@/lib/types";
-import { cn } from "@/lib/utils";
 
 interface TileGridProps {
   imageWidth: number;
@@ -11,17 +16,22 @@ interface TileGridProps {
   imageElement: HTMLImageElement | null;
   onTileHover: (tile: Tile | null) => void;
   onTileClick?: (tile: Tile | null) => void;
+  onTileDoubleClick?: (tile: Tile | null) => void;
   highlightedTile?: Tile | null;
+  currentLevel?: number;
 }
 
 export const TileGrid = ({
   imageElement,
   onTileHover,
   onTileClick,
+  onTileDoubleClick,
   highlightedTile,
+  currentLevel = 1,
 }: TileGridProps) => {
   const [hoveredTile, setHoveredTile] = useState<Tile | null>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!imageElement) return;
@@ -38,7 +48,12 @@ export const TileGrid = ({
     );
 
     if (tileCoords) {
-      const tile = createDefaultTile(tileCoords.x, tileCoords.y);
+      const tileType = getTileTypeForLocation(
+        currentLevel,
+        tileCoords.x,
+        tileCoords.y
+      );
+      const tile = createDefaultTile(tileCoords.x, tileCoords.y, tileType);
       setHoveredTile(tile);
       onTileHover(tile);
     } else {
@@ -55,6 +70,12 @@ export const TileGrid = ({
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!imageElement || !onTileClick) return;
 
+    // Clear any existing timeout
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+      clickTimeoutRef.current = null;
+    }
+
     const imageRect = imageElement.getBoundingClientRect();
 
     const tileCoords = getTileCoordinates(
@@ -67,8 +88,51 @@ export const TileGrid = ({
     );
 
     if (tileCoords) {
-      const tile = createDefaultTile(tileCoords.x, tileCoords.y);
-      onTileClick(tile);
+      const tileType = getTileTypeForLocation(
+        currentLevel,
+        tileCoords.x,
+        tileCoords.y
+      );
+      const tile = createDefaultTile(tileCoords.x, tileCoords.y, tileType);
+
+      // Delay the single click to allow double-click to fire first
+      clickTimeoutRef.current = setTimeout(() => {
+        onTileClick(tile);
+        clickTimeoutRef.current = null;
+      }, 150); // 150ms delay to detect double-click (balance between responsiveness and double-click detection)
+    }
+  };
+
+  const handleDoubleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!imageElement || !onTileDoubleClick) return;
+
+    e.preventDefault(); // Prevent text selection on double-click
+
+    // Cancel the pending single click
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+      clickTimeoutRef.current = null;
+    }
+
+    const imageRect = imageElement.getBoundingClientRect();
+
+    const tileCoords = getTileCoordinates(
+      e.clientX,
+      e.clientY,
+      imageRect.width,
+      imageRect.height,
+      imageRect.left,
+      imageRect.top
+    );
+
+    if (tileCoords) {
+      const tileType = getTileTypeForLocation(
+        currentLevel,
+        tileCoords.x,
+        tileCoords.y
+      );
+      const tile = createDefaultTile(tileCoords.x, tileCoords.y, tileType);
+      onTileDoubleClick(tile);
     }
   };
 
@@ -103,14 +167,20 @@ export const TileGrid = ({
     };
   }, [imageElement]);
 
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (clickTimeoutRef.current) {
+        clearTimeout(clickTimeoutRef.current);
+      }
+    };
+  }, []);
+
   if (!imageElement) return null;
 
   const imageRect = imageElement.getBoundingClientRect();
   const tileSize = getTileSize(imageRect.width, imageRect.height);
   const mapOffset = getMapOffset();
-
-  // Use highlightedTile if provided, otherwise use hoveredTile
-  const activeTile = highlightedTile || hoveredTile;
 
   return (
     <div
@@ -119,18 +189,27 @@ export const TileGrid = ({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
     >
-      {activeTile && (
+      {/* Highlighted tile (blue) - always shows when set */}
+      {highlightedTile && (
         <div
-          className={cn(
-            "absolute border-2 transition-all duration-75 pointer-events-none",
-            highlightedTile
-              ? "border-blue-400 bg-blue-400/30"
-              : "border-yellow-400 bg-yellow-400/20"
-          )}
+          className="absolute border-2 border-blue-400 bg-blue-400/30 transition-all duration-75 pointer-events-none z-10"
           style={{
-            left: mapOffset.left + activeTile.x * tileSize.width,
-            top: mapOffset.top + activeTile.y * tileSize.height,
+            left: mapOffset.left + highlightedTile.x * tileSize.width,
+            top: mapOffset.top + highlightedTile.y * tileSize.height,
+            width: tileSize.width,
+            height: tileSize.height,
+          }}
+        />
+      )}
+      {/* Hovered tile (yellow/orange) - always shows when hovering, even if highlighted tile exists */}
+      {hoveredTile && (
+        <div
+          className="absolute border-2 border-yellow-400 bg-yellow-400/20 transition-all duration-75 pointer-events-none z-20"
+          style={{
+            left: mapOffset.left + hoveredTile.x * tileSize.width,
+            top: mapOffset.top + hoveredTile.y * tileSize.height,
             width: tileSize.width,
             height: tileSize.height,
           }}

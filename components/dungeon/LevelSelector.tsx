@@ -9,7 +9,7 @@ interface LevelSelectorProps {
   totalLevels?: number;
 }
 
-const TOTAL_LEVELS = 17;
+const TOTAL_LEVELS = 32;
 
 export const LevelSelector = ({
   currentLevel,
@@ -18,7 +18,7 @@ export const LevelSelector = ({
   const levels = Array.from({ length: totalLevels }, (_, i) => i + 1);
 
   return (
-    <div className="flex flex-wrap gap-2 p-4">
+    <div className="flex flex-wrap gap-1.5 md:gap-2 p-2 md:p-4 overflow-x-auto">
       {levels.map((level) => (
         <Button
           key={level}
@@ -26,7 +26,7 @@ export const LevelSelector = ({
           variant={currentLevel === level ? "default" : "outline"}
           size="sm"
           className={cn(
-            "min-w-[3rem]",
+            "min-w-[2.5rem] md:min-w-[3rem] text-xs md:text-sm",
             currentLevel === level && "font-bold"
           )}
         >
