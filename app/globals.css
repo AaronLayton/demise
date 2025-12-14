@@ -141,11 +141,11 @@
 
 @keyframes tile-pulse-ring {
   0% {
-    transform: translate(-50%, -50%) scale(0.8);
-    opacity: 0.6;
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0.8;
   }
   100% {
-    transform: translate(-50%, -50%) scale(2);
+    transform: translate(-50%, -50%) scale(3.5);
     opacity: 0;
   }
 }

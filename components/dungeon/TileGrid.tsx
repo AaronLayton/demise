@@ -196,7 +196,7 @@ export const TileGrid = ({
         <>
           {/* Pulsing ring effect - grows outward from center */}
           <div
-            className="absolute border-2 border-blue-400 pointer-events-none z-10"
+            className="absolute border-3 border-blue-400 pointer-events-none z-10"
             style={{
               left: mapOffset.left + highlightedTile.x * tileSize.width + tileSize.width / 2,
               top: mapOffset.top + highlightedTile.y * tileSize.height + tileSize.height / 2,
@@ -204,13 +204,14 @@ export const TileGrid = ({
               height: tileSize.height,
               transform: "translate(-50%, -50%)",
               transformOrigin: "center center",
-              animation: "tile-pulse-ring 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite",
+              animation: "tile-pulse-ring 2s cubic-bezier(0.4, 0, 0.2, 1) infinite",
               borderRadius: "2px",
+              boxShadow: "0 0 20px rgba(59, 130, 246, 0.6)",
             }}
           />
           {/* Second pulsing ring for layered effect */}
           <div
-            className="absolute border-2 border-blue-300 pointer-events-none z-10"
+            className="absolute border-3 border-blue-300 pointer-events-none z-10"
             style={{
               left: mapOffset.left + highlightedTile.x * tileSize.width + tileSize.width / 2,
               top: mapOffset.top + highlightedTile.y * tileSize.height + tileSize.height / 2,
@@ -218,19 +219,35 @@ export const TileGrid = ({
               height: tileSize.height,
               transform: "translate(-50%, -50%)",
               transformOrigin: "center center",
-              animation: "tile-pulse-ring 1.5s cubic-bezier(0.4, 0, 0.2, 1) infinite 0.75s",
+              animation: "tile-pulse-ring 2s cubic-bezier(0.4, 0, 0.2, 1) infinite 1s",
               borderRadius: "2px",
+              boxShadow: "0 0 20px rgba(96, 165, 250, 0.5)",
+            }}
+          />
+          {/* Third pulsing ring for extra visibility */}
+          <div
+            className="absolute border-2 border-blue-500 pointer-events-none z-10"
+            style={{
+              left: mapOffset.left + highlightedTile.x * tileSize.width + tileSize.width / 2,
+              top: mapOffset.top + highlightedTile.y * tileSize.height + tileSize.height / 2,
+              width: tileSize.width,
+              height: tileSize.height,
+              transform: "translate(-50%, -50%)",
+              transformOrigin: "center center",
+              animation: "tile-pulse-ring 2s cubic-bezier(0.4, 0, 0.2, 1) infinite 0.5s",
+              borderRadius: "2px",
+              boxShadow: "0 0 15px rgba(37, 99, 235, 0.7)",
             }}
           />
           {/* Main highlighted tile */}
           <div
-            className="absolute border-2 border-blue-400 bg-blue-400/30 transition-all duration-75 pointer-events-none z-10"
+            className="absolute border-3 border-blue-400 bg-blue-400/40 transition-all duration-75 pointer-events-none z-10"
             style={{
               left: mapOffset.left + highlightedTile.x * tileSize.width,
               top: mapOffset.top + highlightedTile.y * tileSize.height,
               width: tileSize.width,
               height: tileSize.height,
-              boxShadow: "0 0 12px rgba(96, 165, 250, 0.8), inset 0 0 8px rgba(96, 165, 250, 0.3)",
+              boxShadow: "0 0 20px rgba(59, 130, 246, 1), 0 0 40px rgba(59, 130, 246, 0.6), inset 0 0 12px rgba(96, 165, 250, 0.4)",
             }}
           />
         </>
